@@ -1,0 +1,8 @@
+# AFN com uma transicao por linha
+3
+a b
+2
+0 a 0
+0 a 1
+0 b 0
+1 b 2

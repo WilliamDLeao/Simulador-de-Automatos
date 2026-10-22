@@ -1,0 +1,23 @@
+# ============================================================
+# AFN de Exemplo: Reconhece palavras terminadas em "ab"
+# Alfabeto: { 'a', 'b' }
+# ============================================================
+
+# 1. Quantidade de estados (0 a 2)
+3
+
+# 2. Simbolos do alfabeto
+a b
+
+# 3. Estados de aceitacao / finais
+2
+
+# 4. Transicoes (origem simbolo destino(s))
+# Do estado 0 com 'a' pode ir para 0 ou para 1:
+0 a 0 1
+
+# Do estado 0 com 'b' vai para 0:
+0 b 0
+
+# Do estado 1 com 'b' vai para 2 (final):
+1 b 2

@@ -1,0 +1,25 @@
+# ============================================================
+# AUTOMATO FINITO DETERMINISTICO (AFD) CONVERTIDO DO AFN
+# ============================================================
+
+# Quantidade total de estados do AFD:
+3
+
+# Simbolos do alfabeto:
+a b 
+
+# Estados de aceitacao (Finais) do AFD:
+2 
+
+# Mapeamento dos Estados (Subconjuntos do AFN):
+# S0 = {q0}
+# S1 = {q0, q1}
+# S2 = {q0, q2} [FINAL]
+
+# Transicoes do AFD (origem simbolo destino):
+0 a 1
+0 b 0
+1 a 1
+1 b 2
+2 a 1
+2 b 0
