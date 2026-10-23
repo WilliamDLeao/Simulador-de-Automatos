@@ -1,40 +1,52 @@
+#include "commons.h"
+#include "minimizar_afd.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int main () {   
-    int op=0;
 
-    system("cls");
+int main() {
+  int op = -1;
+
+  do {
+    limparTela();
     printf("\n----Menu----");
     printf("\nEscolha seu algoritmo:");
     printf("\n1-TODO");
     printf("\n2-TODO");
     printf("\n3-TODO");
-    printf("\n4-TODO");
+    printf("\n4-Minimizar AFD");
+    printf("\n0-Sair");
     printf("\nDigite o número:");
-    scanf("%d", &op);
-    switch (op)
-    {
-    case 1:
-        system("cls");
-        /* code */
-        break;
-    case 2:
-        system("cls");
-        /* code */
-        break;
-    case 3:
-        system("cls");
-        /* code */
-        break;
-    case 4:
-        system("cls");
-        /* code */
-        break;
-    
-    default:
-        break;
+
+    if (scanf("%d", &op) != 1) {
+      op = -1; /* entrada invalida (letra) */
+      int ch;
+      while ((ch = getchar()) != '\n' && ch != EOF)
+        ;
     }
 
-    return 0;
+    switch (op) {
+    case 1:
+      limparTela();
+      /* code */
+      break;
+    case 2:
+      limparTela();
+      /* code */
+      break;
+    case 3:
+      limparTela();
+      /* code */
+      break;
+    case 4:
+      menuMinimizarAFD();
+      break;
+    case 0:
+      break;
+    default:
+      break;
+    }
+  } while (op != 0);
+
+  return 0;
 }
