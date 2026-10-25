@@ -204,7 +204,7 @@ static void conjunto(const unsigned char *estados, int n) {
     printf("}");
 }
 
-static void exibir(const Automato *a) {
+static void exibir(const Automato *a, int mostrar_lambda) {
     int i, s;
     printf("Quantidade de estados: %d\nEstados: {", a->n);
     for (i = 0; i < a->n; i++) printf("%sq%d", i ? ", " : "", i);
@@ -217,6 +217,11 @@ static void exibir(const Automato *a) {
         for (s = 0; s < a->m; s++) {
             printf("  delta(q%d, %c) = ", i, a->alfabeto[s]);
             conjunto(&D(a, s, i, 0), a->n);
+            putchar('\n');
+        }
+        if (mostrar_lambda) {
+            printf("  delta(q%d, lambda) = ", i);
+            conjunto(&D(a, a->m, i, 0), a->n);
             putchar('\n');
         }
     }
@@ -273,8 +278,10 @@ void transformar_afn_lambda_para_afn(void) {
     if (!inteiro("Opcao: ", 0, 2, &opcao) || opcao == 0) return;
     ok = opcao == 1 ? cadastrar(&entrada) : ler_arquivo(&entrada);
     if (ok && transformar(&entrada, &convertido)) {
-        puts("\n=== AFN RESULTANTE (SEM LAMBDA) ===");
-        exibir(&convertido);
+        puts("\n--- AFN original (com lambda) ---");
+        exibir(&entrada, 1);
+        puts("\n--- AFN resultante (sem lambda) ---");
+        exibir(&convertido, 0);
     }
     liberar(&entrada);
     liberar(&convertido);

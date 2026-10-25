@@ -23,7 +23,8 @@ AFN com lambda → AFN sem lambda → AFD → AFD mínimo
 
 O programa recebe a descrição do autômato. Não oferece uma opção de testar
 palavras no menu de uso.
-O resultado é impresso no terminal; não há exportação nem envio automático
+O terminal exibe primeiro o AFN original, incluindo as transições lambda,
+e depois o AFN resultante, sem lambda; não há exportação nem envio automático
 para a próxima etapa do grupo.
 
 ## 2. Arquivos da implementação
@@ -277,7 +278,7 @@ A linguagem desse exemplo é `x*y0*`: zero ou mais x, um y e zero ou mais símbo
 | `numero_arquivo` | Lê e valida um inteiro de um arquivo |
 | `ler_arquivo` | Abre o caminho informado, valida todos os campos e fecha o arquivo |
 | `conjunto` | Imprime um conjunto de estados entre chaves |
-| `exibir` | Imprime estados, alfabeto, inicial, finais e transições sem lambda |
+| `exibir` | Imprime estados, alfabeto, inicial, finais e transições; o parâmetro mostrar_lambda inclui as transições lambda apenas no original |
 | `transformar` | Calcula fechos, finais e transições do AFN equivalente |
 | `transformar_afn_lambda_para_afn` | Função pública: submenu, leitura, conversão, exibição e limpeza |
 

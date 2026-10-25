@@ -67,7 +67,8 @@ Para cada símbolo x, a conversão usa:
 
 Um estado torna-se final se seu fecho contém algum final original, preservando
 a aceitação da palavra vazia. O estado inicial é mantido. O resultado é um AFN
-sem lambda, exibido no terminal; não é uma determinização nem minimização.
+sem lambda. O terminal mostra primeiro o autômato original, com suas transições
+lambda, e depois o convertido, sem lambda; não é uma determinização nem minimização.
 A opção 4 continua disponível para minimizar AFDs.
 
 ## Documentação
