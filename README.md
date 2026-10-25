@@ -11,7 +11,7 @@ No VS Code, use os comandos acima no terminal integrado.
 
 ## AFN lambda para AFN
 
-No menu principal, escolha **1**. Depois escolha **1** para digitar ou **2**
+No menu principal, escolha **2**. Depois escolha **1** para digitar ou **2**
 para carregar um arquivo. Informe de 1 a 26 símbolos distintos: letras, dígitos ou pontuação ASCII
 visível, cada um com um único caractere. Espaços, acentos e `l` não são
 permitidos como símbolos; `l` continua reservado para lambda.

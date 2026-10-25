@@ -32,7 +32,7 @@ para a próxima etapa do grupo.
 |---|---|
 | `afn_lambda.c` | Estrutura interna, leitura, validação, conversão, impressão e submenu |
 | `afn_lambda.h` | Declaração da função pública de entrada do módulo |
-| `main.c` | Inclui o cabeçalho e chama o módulo na opção 1 |
+| `main.c` | Inclui o cabeçalho e chama o módulo na opção 2 |
 | `ex_afn_lambda.txt` | Exemplo válido com três símbolos: x, y e 0 |
 | `README.md` | Instruções rápidas para compilar e usar |
 
@@ -50,7 +50,7 @@ gcc -std=c11 -Wall -Wextra -pedantic -g main.c afd.c commons.c minimizar_afd.c c
 
 No VS Code, execute os comandos acima no terminal integrado, na pasta do projeto.
 
-No menu principal, escolha `1`. No submenu:
+No menu principal, escolha `2`. No submenu:
 
 - `1`: cadastrar pelo teclado;
 - `2`: ler um arquivo de texto;
@@ -340,7 +340,7 @@ Apenas permitir o mesmo alfabeto não cria essa integração automaticamente.
 
 ## 14. Verificação manual
 
-Compile com as opções mostradas na seção 3. Execute o programa, escolha 1
+Compile com as opções mostradas na seção 3. Execute o programa, escolha 2
 no menu principal e depois 2 para ler `ex_afn_lambda.txt`. Compare a saída
 com a tabela da seção 9. Repita escolhendo 1 no submenu para digitar os
 mesmos dados, cada campo em uma linha.

@@ -13,8 +13,8 @@ int main() {
     limparTela();
     printf("\n----Menu----");
     printf("\nEscolha seu algoritmo:");
-    printf("\n1-AFN lambda para AFN");
-    printf("\n2-TODO");
+    printf("\n1-TODO");
+    printf("\n2-AFN lambda para AFN");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
     printf("\n0-Sair");
@@ -30,16 +30,14 @@ int main() {
     }
 
     switch (op) {
-    case 1: {
+    case 1:
+      break;
+    case 2: {
       int ch;
       while ((ch = getchar()) != '\n' && ch != EOF) {}
       transformar_afn_lambda_para_afn();
       break;
     }
-    case 2:
-      limparTela();
-      /* code */
-      break;
     case 3:
       limparTela();
       menuConversorAFNparaAFD();
