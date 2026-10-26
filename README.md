@@ -3,7 +3,7 @@
 ## Compilar e executar (Linux, GCC)
 
 ```bash
-gcc -std=c11 -Wall -Wextra -pedantic -g main.c afd.c commons.c minimizar_afd.c conversor_AFN_para_AFD.c afn_lambda.c -o simulador
+gcc -std=c11 -Wall -Wextra -pedantic -g main.c afd.c commons.c minimizar_afd.c conversor_AFN_para_AFD.c afn_multiplos_estados.c afn_lambda.c -o simulador
 ./simulador
 ```
 
