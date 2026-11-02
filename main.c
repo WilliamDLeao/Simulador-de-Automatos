@@ -1,6 +1,7 @@
 #include "commons.h"
 #include "afn_multiplos_estados.h"
 #include "conversor_AFN_para_AFD.h"
+#include "afn_lambda.h"
 #include "minimizar_afd.h"
 #include "uniao_automatos.h"
 #include "complemento_afn.h"
@@ -16,7 +17,7 @@ int main() {
     printf("\n----Menu----");
     printf("\nEscolha seu algoritmo:");
     printf("\n1-Converter AFN com multiplos estados para AFN-lambda");
-    printf("\n2-TODO");
+    printf("\n2-AFN lambda para AFN");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
     printf("\n6-Uniao de automatos");
@@ -24,7 +25,9 @@ int main() {
     printf("\n0-Sair");
     printf("\nDigite o número: ");
 
-    if (scanf("%d", &op) != 1) {
+    int leitura = scanf("%d", &op);
+    if (leitura == EOF) return 0;
+    if (leitura != 1) {
       op = -1; /* entrada invalida (letra) */
       int ch;
       while ((ch = getchar()) != '\n' && ch != EOF)
@@ -35,10 +38,12 @@ int main() {
     case 1:
       menuAFNMultiplosParaLambda();
       break;
-    case 2:
-      limparTela();
-      /* code */
+    case 2: {
+      int ch;
+      while ((ch = getchar()) != '\n' && ch != EOF) {}
+      transformar_afn_lambda_para_afn();
       break;
+    }
     case 3:
       limparTela();
       menuConversorAFNparaAFD();
