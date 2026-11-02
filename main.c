@@ -2,6 +2,7 @@
 #include "afn_multiplos_estados.h"
 #include "conversor_AFN_para_AFD.h"
 #include "minimizar_afd.h"
+#include "complemento_afn.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,6 +18,7 @@ int main() {
     printf("\n2-TODO");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
+    printf("\n9-Complemento de AFN");
     printf("\n0-Sair");
     printf("\nDigite o número: ");
 
@@ -41,6 +43,9 @@ int main() {
       break;
     case 4:
       menuMinimizarAFD();
+      break;
+    case 9:
+      menuComplementoAFN();
       break;
     case 0:
       break;
