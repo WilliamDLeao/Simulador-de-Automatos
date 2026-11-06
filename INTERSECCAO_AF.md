@@ -73,8 +73,6 @@ arquivo ausente ou formato inválido permitem tentar novamente na mesma etapa;
 digite `0` no campo do caminho para cancelar. Após carregar, uma confirmação
 informa quantos estados e símbolos foram lidos.
 
-Teste de regressão da interface (após compilar):
-`python tests/test_entrada_interseccao.py`.
 
 Um arquivo por autômato:
 
@@ -130,14 +128,3 @@ API devem manter `final[]` e `finais_mask` consistentes. Dependências:
 `afd`, `conversor_AFN_para_AFD`, `complemento_afn` (determinização completa,
 simulação e exportação), `minimizar_afd` e `commons`. Os algoritmos dos colegas
 não foram alterados. Integração: incluir cabeçalho no main e chamar no case 7.
-
-## Testes reproduzíveis
-
-```sh
-make test-interseccao
-```
-
-`tests/test_interseccao.c` verifica a API AFD e limites. `tests/test_interseccao_afn.c`
-compara produto, minimizado e AFN equivalente com simulação independente de
-conjuntos de estados. Cobre ramificação, entradas mistas, vazia, alfabetos
-reordenados/distintos, estado 63, limite de determinização e entradas inválidas.
