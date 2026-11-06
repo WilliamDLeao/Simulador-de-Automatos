@@ -7,6 +7,11 @@
 #include <stdint.h>
 #include <errno.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#endif
 
 #define LIMITE_SIMBOLOS 26
 
@@ -159,7 +164,7 @@ static int ler_arquivo(Automato *a) {
     char nome[1024], simbolo[128];
     int n, m, quantidade, estado, origem, destino, i, ch, ok = 0;
     FILE *f;
-    printf("Nome ou caminho do arquivo: ");
+    printf("Nome ou caminho do arquivo, ex:(ex_afn_lambda.txt):");
     fflush(stdout);
     if (!linha(nome, sizeof nome)) return 0;
     nome[strcspn(nome, "\r\n")] = '\0';
@@ -269,6 +274,64 @@ static int transformar(const Automato *entrada, Automato *saida) {
     return 1;
 }
 
+/* Formato AFN do grupo: uma linha por destino e transicoes ate EOF. */
+static int gravar_afn(FILE *arquivo, const Automato *a) {
+    int finais = 0;
+    fprintf(arquivo, "%d %d\n", a->n, a->m);
+    for (int s = 0; s < a->m; ++s)
+        fprintf(arquivo, "%c%c", a->alfabeto[s], s + 1 == a->m ? '\n' : ' ');
+    for (int q = 0; q < a->n; ++q) finais += a->finais[q];
+    fprintf(arquivo, "%d\n%d", a->inicial, finais);
+    for (int q = 0; q < a->n; ++q)
+        if (a->finais[q]) fprintf(arquivo, " %d", q);
+    fputc('\n', arquivo);
+    for (int q = 0; q < a->n; ++q)
+        for (int s = 0; s < a->m; ++s)
+            for (int d = 0; d < a->n; ++d)
+                if (D(a,s,q,d)) fprintf(arquivo, "%d %c %d\n", q, a->alfabeto[s], d);
+    return !ferror(arquivo);
+}
+
+static FILE *criar_arquivo_novo(const char *nome) {
+#ifdef _WIN32
+    int fd = _open(nome, _O_WRONLY | _O_CREAT | _O_EXCL | _O_TEXT,
+                   _S_IREAD | _S_IWRITE);
+    if (fd < 0) return NULL;
+    FILE *arquivo = _fdopen(fd, "w");
+    if (!arquivo) { _close(fd); remove(nome); }
+    return arquivo;
+#else
+    return fopen(nome, "wx");
+#endif
+}
+
+static void oferecer_exportacao(const Automato *resultado) {
+    int escolha;
+    if (!inteiro("\n1 - Salvar AFN em .txt | 0 - Voltar ao menu: ", 0, 1, &escolha)
+        || escolha == 0) return;
+    for (;;) {
+        char nome[1024];
+        printf("Nome do arquivo a ser salvo (ex: resultado.txt) ou (ENTER para cancelar): ");
+        fflush(stdout);
+        if (!linha(nome, sizeof nome)) return;
+        nome[strcspn(nome, "\r\n")] = '\0';
+        if (!nome[0]) return;
+        FILE *arquivo = criar_arquivo_novo(nome);
+        if (!arquivo) {
+            perror("Nao foi possivel criar o arquivo");
+            continue;
+        }
+        int ok = gravar_afn(arquivo, resultado);
+        if (fclose(arquivo) != 0) ok = 0;
+        if (ok) {
+            printf("AFN salvo em '%s'.\n", nome);
+            return;
+        }
+        remove(nome);
+        puts("Falha ao gravar. Escolha outro caminho.");
+    }
+}
+
 /* Ponto de entrada para a opcao correspondente no menu do grupo. */
 void transformar_afn_lambda_para_afn(void) {
     Automato entrada = {0}, convertido = {0};
@@ -282,9 +345,11 @@ void transformar_afn_lambda_para_afn(void) {
         exibir(&entrada, 1);
         puts("\n--- AFN resultante (sem lambda) ---");
         exibir(&convertido, 0);
+        oferecer_exportacao(&convertido);
+    } else {
+        printf("\nPressione ENTER para continuar...");
+        { char pausa[256]; (void)linha(pausa, sizeof pausa); }
     }
     liberar(&entrada);
     liberar(&convertido);
-    printf("\nPressione ENTER para continuar...");
-    { char pausa[256]; (void)linha(pausa, sizeof pausa); }
 }

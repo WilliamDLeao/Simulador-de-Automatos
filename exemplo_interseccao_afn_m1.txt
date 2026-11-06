@@ -1,0 +1,8 @@
+# M1: palavras terminadas em ab; dois destinos em q0 com a.
+3 2
+a b
+0
+1 2
+0 a 0 1
+0 b 0
+1 b 2
