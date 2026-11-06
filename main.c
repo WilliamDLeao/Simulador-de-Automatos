@@ -3,6 +3,7 @@
 #include "commons.h"
 #include "complemento_afn.h"
 #include "conversor_AFN_para_AFD.h"
+#include "interseccao_automatos.h"
 #include "minimizar_afd.h"
 #include "subtracao_automatos.h"
 #include "uniao_automatos.h"
@@ -21,6 +22,7 @@ int main() {
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
     printf("\n6-Uniao de automatos");
+    printf("\n7-Interseccao de dois AFs (AFN/AFD)");
     printf("\n8- Subtracao de automatos");
     printf("\n9-Complemento de AFN");
     printf("\n0-Sair");
@@ -56,6 +58,9 @@ int main() {
       break;
     case 6:
       menuUniaoAutomatos();
+      break;
+    case 7:
+      menuInterseccaoAutomatos();
       break;
     case 8:
       menuSubtracaoAutomatos();

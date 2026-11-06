@@ -24,8 +24,11 @@ AFN com lambda → AFN sem lambda → AFD → AFD mínimo
 O programa recebe a descrição do autômato. Não oferece uma opção de testar
 palavras no menu de uso.
 O terminal exibe primeiro o AFN original, incluindo as transições lambda,
-e depois o AFN resultante, sem lambda; não há exportação nem envio automático
-para a próxima etapa do grupo.
+e depois o AFN resultante, sem lambda. Escolha **1** para salvar o resultado
+em um novo arquivo (por exemplo, `afn_resultante.txt`) ou **0** para voltar.
+O arquivo contém os estados, o alfabeto, o inicial, os finais e uma linha por
+transição, até o fim do arquivo. Os leitores das opções 3, 7 e 9 aceitam AFNs
+com até 64 estados e usam a vírgula como separador.
 
 ## 2. Arquivos da implementação
 
