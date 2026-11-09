@@ -12,13 +12,13 @@ run.bat
 ```
 ou manualmente com GCC:
 ```cmd
-gcc -Wall -Wextra *.c -o exe.exe
+gcc -Wall -Wextra src/*.c -Isrc -o exe.exe
 .\exe.exe
 ```
 
 ### Linux / macOS
 ```bash
-gcc -std=c11 -Wall -Wextra -pedantic -g *.c -o simulador
+gcc -std=c11 -Wall -Wextra -pedantic -g src/*.c -Isrc -o simulador
 ./simulador
 ```
 ou utilizando o `Makefile`:
@@ -57,14 +57,40 @@ O formato padrão aceito pelos leitores do simulador segue a estrutura:
 
 ---
 
+## 📁 Estrutura do Repositório
+
+```text
+Simulador-de-Automatos/
+├── src/                    # Código-fonte e cabeçalhos em C
+│   ├── main.c              # Ponto de entrada e menu principal
+│   ├── afd.c / .h          # Estrutura base de AFD e operações de I/O
+│   ├── afn_lambda.c / .h   # Conversão de AFN-λ para AFN
+│   ├── afn_multiplos_estados.c / .h # AFN múltiplos iniciais/finais para AFN-λ
+│   ├── commons.c / .h      # Funções de terminal (limpar tela, pausas)
+│   ├── complemento_afn.c / .h       # Complemento formal de AFN
+│   ├── conversor_AFN_para_AFD.c / .h# Determinização (Subset Construction)
+│   ├── interseccao_automatos.c / .h # Interseção via produto cartesiano
+│   ├── json_reader.c / .h  # Leitor e parser de autômatos em JSON
+│   ├── minimizar_afd.c / .h# Minimização de AFD (Moore)
+│   ├── subtracao_automatos.c / .h   # Subtração via produto cartesiano
+│   └── uniao_automatos.c / .h       # União de autômatos
+├── Makefile                # Script de compilação Make
+├── run.bat                 # Script de execução para Windows
+├── run.sh                  # Script de execução para Linux/macOS
+├── README.md               # Documentação completa unificada
+└── *.txt / *.json          # Arquivos de exemplo e teste
+```
+
+---
+
 ## 🛠️ Funcionalidade de Cada Função por Módulo
 
-### 1. Ponto de Entrada (`main.c`)
+### 1. Ponto de Entrada (`src/main.c`)
 - `main()`: Loop do menu principal; gerencia a seleção do usuário e direciona a execução para o submenu correspondente de cada operação.
 
 ---
 
-### 2. Opção 1 — AFN com Múltiplos Estados para AFN-$\lambda$ (`afn_multiplos_estados.c` / `.h`)
+### 2. Opção 1 — AFN com Múltiplos Estados para AFN-$\lambda$ (`src/afn_multiplos_estados.c` / `.h`)
 Converte autômatos com múltiplos estados iniciais/finais em um AFN-$\lambda$ com inicial único.
 
 - `lerAFNMultiplo(AFNMultiplo *a)`: Lê os dados de um autômato com múltiplos estados via terminal interativo.
@@ -77,7 +103,7 @@ Converte autômatos com múltiplos estados iniciais/finais em um AFN-$\lambda$ c
 
 ---
 
-### 3. Opção 2 — AFN-$\lambda$ para AFN sem $\lambda$ (`afn_lambda.c` / `.h`)
+### 3. Opção 2 — AFN-$\lambda$ para AFN sem $\lambda$ (`src/afn_lambda.c` / `.h`)
 Remove transições vazias preservando a linguagem reconhecida (inclusive aceitação de palavra vazia).
 
 - `transformar_afn_lambda_para_afn(void)`: Função principal do módulo (chamada pelo `main`); controla o submenu, leitura, conversão e exibição.
@@ -93,7 +119,7 @@ Remove transições vazias preservando a linguagem reconhecida (inclusive aceita
 
 ---
 
-### 4. Opção 3 — Conversão de AFN para AFD (`conversor_AFN_para_AFD.c` / `.h`)
+### 4. Opção 3 — Conversão de AFN para AFD (`src/conversor_AFN_para_AFD.c` / `.h`)
 Determina um autômato finito através da construção de subconjuntos.
 
 - `lerAFN(AFN *a)`: Lê um AFN (sem $\lambda$) informado diretamente pelo teclado.
@@ -104,21 +130,21 @@ Determina um autômato finito através da construção de subconjuntos.
 
 ---
 
-### 5. Opção 4 — Minimização de AFD (`minimizar_afd.c` / `.h` e `afd.c` / `.h`)
+### 5. Opção 4 — Minimização de AFD (`src/minimizar_afd.c` / `.h` e `src/afd.c` / `.h`)
 Reduz o AFD para o menor número de estados possíveis usando partição de equivalência.
 
-#### Módulo Base do AFD (`afd.c` / `.h`)
+#### Módulo Base do AFD (`src/afd.c` / `.h`)
 - `lerAFD(AFD *a)`: Lê um AFD via teclado.
 - `lerAFDArquivo(const char *nome, AFD *a)`: Lê um AFD a partir de arquivo `.txt`.
 - `imprimirAFD(const AFD *a)`: Exibe a tabela de transição e definições formais do AFD.
 
-#### Minimizador (`minimizar_afd.c` / `.h`)
+#### Minimizador (`src/minimizar_afd.c` / `.h`)
 - `minimizarAFD(const AFD *entrada, AFD *saida)`: Aplica o **Algoritmo de Moore** para particionar os estados em classes de equivalência indistinguíveis, eliminando redundâncias e estados inalcançáveis.
 - `menuMinimizarAFD(void)`: Submenu para carregar o AFD, executar a minimização e imprimir a versão minimizada.
 
 ---
 
-### 6. Opção 6 — União de Autômatos (`uniao_automatos.c` / `.h`)
+### 6. Opção 6 — União de Autômatos (`src/uniao_automatos.c` / `.h`)
 Calcula a união das linguagens de dois AFDs: $L = L(M_1) \cup L(M_2)$.
 
 - `unirAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Constrói o AFD produto em paralelo via BFS com o alfabeto unificado ($\Sigma_1 \cup \Sigma_2$). Um par $(p, q)$ é final se $p \in F_1 \lor q \in F_2$.
@@ -126,7 +152,7 @@ Calcula a união das linguagens de dois AFDs: $L = L(M_1) \cup L(M_2)$.
 
 ---
 
-### 7. Opção 7 — Interseção de Autômatos (`interseccao_automatos.c` / `.h`)
+### 7. Opção 7 — Interseção de Autômatos (`src/interseccao_automatos.c` / `.h`)
 Calcula a interseção de linguagens: $L = L(M_1) \cap L(M_2)$ para pares de AFDs ou AFNs.
 
 - `intersectarAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Executa o produto cartesiano entre dois AFDs; um par $(p, q)$ é final se $p \in F_1 \land q \in F_2$.
@@ -135,7 +161,7 @@ Calcula a interseção de linguagens: $L = L(M_1) \cap L(M_2)$ para pares de AFD
 
 ---
 
-### 8. Opção 8 — Subtração de Autômatos (`subtracao_automatos.c` / `.h`)
+### 8. Opção 8 — Subtração de Autômatos (`src/subtracao_automatos.c` / `.h`)
 Calcula a diferença entre duas linguagens regulares: $L = L(M_1) \setminus L(M_2)$.
 
 - `subtrairAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Gera o produto cartesiano em paralelo onde um par $(p, q)$ é final se $p \in F_1 \land q \notin F_2$.
@@ -143,7 +169,7 @@ Calcula a diferença entre duas linguagens regulares: $L = L(M_1) \setminus L(M_
 
 ---
 
-### 9. Opção 9 — Complemento de AFN (`complemento_afn.c` / `.h`)
+### 9. Opção 9 — Complemento de AFN (`src/complemento_afn.c` / `.h`)
 Calcula o complemento da linguagem de um AFN: $L(\overline{M}) = \Sigma^* \setminus L(M)$.
 
 - `determinizarAFNCompleto(const AFN *afn, AFD *dfa_completo)`: Converte o AFN em AFD e garante que a função de transição seja total, inserindo um estado morto/poço caso haja transições indefinidas.
@@ -159,12 +185,12 @@ Calcula o complemento da linguagem de um AFN: $L(\overline{M}) = \Sigma^* \setmi
 
 ### 10. Módulos Utilitários
 
-#### Funções Comuns (`commons.c` / `.h`)
+#### Funções Comuns (`src/commons.c` / `.h`)
 - `limparTela()`: Limpa o terminal de forma compatível com Windows (`cls`) e Linux/POSIX (`clear`).
 - `imprimirCabecalho(const char *titulo)`: Exibe um cabeçalho formatado para os menus.
 - `pausarTela()`: Pausa a execução e aguarda `Enter` antes de prosseguir.
 
-#### Leitor de JSON (`json_reader.c` / `.h`)
+#### Leitor de JSON (`src/json_reader.c` / `.h`)
 - `lerArquivoJson(const char *caminho, ArquivoJsonAutomatos *res)`: Faz o parse de arquivos `.json` estruturados contendo 1 ou 2 autômatos.
 - `automatoJsonParaAFD(...)` / `automatoJsonParaAFN(...)` / `automatoJsonParaAFNMultiplo(...)`: Converte os dados intermediários do JSON para os tipos de dados nativos do projeto.
 - `lerAFDJson(...)` / `lerAFNJson(...)` / `lerAFNMultiploJson(...)`: Permite carregar um autômato específico de um arquivo `.json`.

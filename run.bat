@@ -1,6 +1,6 @@
 @echo off
 echo Compilando o Simulador de Automatos...
-gcc -Wall -Wextra *.c -o exe.exe
+gcc -Wall -Wextra src/*.c -Isrc -o exe.exe
 if %ERRORLEVEL% equ 0 (
     echo Iniciando o simulador...
     exe.exe
