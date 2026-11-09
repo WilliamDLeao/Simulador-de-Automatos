@@ -1,7 +1,9 @@
 #include "subtracao_automatos.h"
 #include "commons.h"
 #include "minimizar_afd.h"
+#include "json_reader.h"
 #include <stdio.h>
+#include <string.h>
 
 /* Retorna o proximo estado de 'a' com o simbolo 'c', tratando estado
    morto/poco. O indice a->n representa o estado morto virtual. */
@@ -110,6 +112,7 @@ static int lerAutomatoOpcao(const char *rotulo, AFD *a) {
   printf("\nComo deseja informar o %s?\n", rotulo);
   printf("1 - Digitar\n");
   printf("2 - Ler de arquivo .txt\n");
+  printf("3 - Ler de arquivo .json\n");
   printf("Opcao: ");
   if (scanf("%d", &op) != 1)
     op = 1;
@@ -117,7 +120,14 @@ static int lerAutomatoOpcao(const char *rotulo, AFD *a) {
   if (op == 2) {
     printf("Nome do arquivo: ");
     scanf("%255s", nome);
+    if (strstr(nome, ".json") != NULL) {
+      return lerAFDJson(nome, a, 0);
+    }
     return lerAFDArquivo(nome, a);
+  } else if (op == 3) {
+    printf("Nome do arquivo .json: ");
+    scanf("%255s", nome);
+    return lerAFDJson(nome, a, 0);
   }
   printf("\n");
   return lerAFD(a);
@@ -129,7 +139,25 @@ void menuSubtracaoAutomatos(void) {
   limparTela();
   imprimirCabecalho("SUBTRACAO DE AUTOMATOS (AFD)");
 
-  if (!lerAutomatoOpcao("AFD 1", &a1) || !lerAutomatoOpcao("AFD 2", &a2)) {
+  printf("Como deseja carregar os automatos para a subtracao?\n");
+  printf("1 - Ler ambos de um unico arquivo .json (ex: exemplo_leitura.json)\n");
+  printf("2 - Informar AFD 1 e AFD 2 separadamente (teclado / .txt / .json)\n");
+  printf("Opcao: ");
+  int modo = 1;
+  if (scanf("%d", &modo) != 1)
+    modo = 1;
+
+  int ok = 0;
+  if (modo == 1) {
+    char nome[256];
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    scanf("%255s", nome);
+    ok = lerDoisAFDsJson(nome, &a1, &a2);
+  } else {
+    ok = lerAutomatoOpcao("AFD 1", &a1) && lerAutomatoOpcao("AFD 2", &a2);
+  }
+
+  if (!ok) {
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF)
       ;

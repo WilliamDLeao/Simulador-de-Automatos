@@ -1,6 +1,8 @@
 #include "minimizar_afd.h"
 #include "commons.h"
+#include "json_reader.h"
 #include <stdio.h>
+#include <string.h>
 
 
 /* marca os estados alcancaveis a partir de s */
@@ -117,14 +119,23 @@ void menuMinimizarAFD(void) {
   printf("Como deseja informar o AFD?\n");
   printf("1 - Digitar\n");
   printf("2 - Ler de arquivo .txt\n");
+  printf("3 - Ler de arquivo .json\n");
   printf("Opcao: ");
   if (scanf("%d", &opcao) != 1)
     opcao = 1;
 
   if (opcao == 2) {
-    printf("Nome do arquivo: ");
+    printf("Nome do arquivo (ex: exemplo_afd.txt): ");
     scanf("%255s", nome);
-    ok = lerAFDArquivo(nome, &original);
+    if (strstr(nome, ".json") != NULL) {
+      ok = lerAFDJson(nome, &original, 0);
+    } else {
+      ok = lerAFDArquivo(nome, &original);
+    }
+  } else if (opcao == 3) {
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    scanf("%255s", nome);
+    ok = lerAFDJson(nome, &original, 0);
   } else {
     printf("\n");
     ok = lerAFD(&original);

@@ -1,5 +1,6 @@
 /* Modulo de conversao de AFN-lambda para AFN com alfabeto informado pelo usuario. C11. */
 #include "afn_lambda.h"
+#include "json_reader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -160,6 +161,65 @@ static int numero_arquivo(FILE *f, int minimo, int maximo, int *valor) {
     return 1;
 }
 
+static int automato_json_para_automato(const AutomatoJson *aj, Automato *a) {
+    if (!criar(a, aj->n, aj->m)) return 0;
+    memcpy(a->alfabeto, aj->alfabeto, (size_t)aj->m);
+    a->inicial = aj->qtd_iniciais > 0 ? aj->iniciais[0] : 0;
+    for (int i = 0; i < aj->qtd_finais; i++) {
+        int f = aj->finais[i];
+        if (f >= 0 && f < a->n) a->finais[f] = 1;
+    }
+    for (int t = 0; t < aj->qtd_transicoes; t++) {
+        int o = aj->transicoes[t].origem;
+        int d = aj->transicoes[t].destino;
+        if (aj->transicoes[t].is_lambda || aj->transicoes[t].simbolo == 'l' || aj->transicoes[t].simbolo == 'L') {
+            if (o >= 0 && o < a->n && d >= 0 && d < a->n) {
+                D(a, a->m, o, d) = 1;
+            }
+        } else {
+            int s = indice_simbolo(a, aj->transicoes[t].simbolo);
+            if (s >= 0 && o >= 0 && o < a->n && d >= 0 && d < a->n) {
+                D(a, s, o, d) = 1;
+            }
+        }
+    }
+    return 1;
+}
+
+static int ler_arquivo_json_caminho(const char *caminho, Automato *a) {
+    ArquivoJsonAutomatos arq;
+    if (!lerArquivoJson(caminho, &arq)) return 0;
+    const AutomatoJson *escolhido = &arq.a1;
+    if (arq.qtd_automatos > 1) {
+        printf("\nO arquivo contem 2 automatos (1: %s, 2: %s).\n",
+               arq.a1.nome[0] ? arq.a1.nome : "automato1",
+               arq.a2.nome[0] ? arq.a2.nome : "automato2");
+        int op = 1;
+        inteiro("Qual deseja carregar? (1 ou 2) [padrao 1]: ", 1, 2, &op);
+        escolhido = (op == 2) ? &arq.a2 : &arq.a1;
+    }
+    return automato_json_para_automato(escolhido, a);
+}
+
+static int ler_arquivo_json(Automato *a) {
+    char nome[1024];
+    printf("Nome ou caminho do arquivo JSON (ex: exemplo_leitura.json): ");
+    fflush(stdout);
+    if (!linha(nome, sizeof nome)) return 0;
+    nome[strcspn(nome, "\r\n")] = '\0';
+    char *caminho = nome;
+    while (isspace((unsigned char)*caminho)) ++caminho;
+    size_t n = strlen(caminho);
+    while (n && isspace((unsigned char)caminho[n - 1])) caminho[--n] = '\0';
+    if (n >= 2 && ((caminho[0] == '"' && caminho[n - 1] == '"') ||
+                   (caminho[0] == '\'' && caminho[n - 1] == '\''))) {
+        caminho[n - 1] = '\0';
+        ++caminho;
+    }
+    if (!*caminho) return 0;
+    return ler_arquivo_json_caminho(caminho, a);
+}
+
 static int ler_arquivo(Automato *a) {
     char nome[1024], simbolo[128];
     int n, m, quantidade, estado, origem, destino, i, ch, ok = 0;
@@ -168,6 +228,9 @@ static int ler_arquivo(Automato *a) {
     fflush(stdout);
     if (!linha(nome, sizeof nome)) return 0;
     nome[strcspn(nome, "\r\n")] = '\0';
+    if (strstr(nome, ".json") != NULL) {
+        return ler_arquivo_json_caminho(nome, a);
+    }
     f = fopen(nome, "r");
     if (!f) { perror("Nao foi possivel abrir o arquivo"); return 0; }
     if (!numero_arquivo(f, 1, 100, &n) ||
@@ -337,9 +400,15 @@ void transformar_afn_lambda_para_afn(void) {
     Automato entrada = {0}, convertido = {0};
     int opcao, ok;
     puts("\n=== AFN LAMBDA PARA AFN ===");
-    puts("1 - Digitar\n2 - Ler arquivo .txt\n0 - Voltar");
-    if (!inteiro("Opcao: ", 0, 2, &opcao) || opcao == 0) return;
-    ok = opcao == 1 ? cadastrar(&entrada) : ler_arquivo(&entrada);
+    puts("1 - Digitar\n2 - Ler arquivo .txt\n3 - Ler arquivo .json\n0 - Voltar");
+    if (!inteiro("Opcao: ", 0, 3, &opcao) || opcao == 0) return;
+    if (opcao == 1) {
+        ok = cadastrar(&entrada);
+    } else if (opcao == 2) {
+        ok = ler_arquivo(&entrada);
+    } else {
+        ok = ler_arquivo_json(&entrada);
+    }
     if (ok && transformar(&entrada, &convertido)) {
         puts("\n--- AFN original (com lambda) ---");
         exibir(&entrada, 1);

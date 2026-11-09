@@ -1,6 +1,7 @@
 #include "interseccao_automatos.h"
 #include "complemento_afn.h"
 #include "minimizar_afd.h"
+#include "json_reader.h"
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -191,7 +192,7 @@ static int lerEntrada(int numero, AFN *a) {
   int opcao;
   char nome[1024];
   for (;;) {
-    printf("\nAF %d: 1 - Teclado | 2 - Arquivo | 0 - Cancelar\nOpcao: ", numero);
+    printf("\nAF %d: 1 - Teclado | 2 - Arquivo (.txt / .json) | 0 - Cancelar\nOpcao: ", numero);
     fflush(stdout);
     int leitura = lerLinha(stdin, nome, sizeof nome);
     if (!leitura) return 0;
@@ -208,7 +209,7 @@ static int lerEntrada(int numero, AFN *a) {
       puts("Dados invalidos. Escolha novamente como informar este automato.");
       continue;
     }
-    printf("Exemplo: exemplo_interseccao_afn_m%d.txt\n", numero);
+    printf("Exemplo: exemplo_interseccao_afn_m%d.txt ou exemplo_leitura.json\n", numero);
     for (;;) {
       printf("Arquivo de M%d (0 = cancelar): ", numero);
       fflush(stdout);
@@ -226,7 +227,12 @@ static int lerEntrada(int numero, AFN *a) {
       }
       if (!strcmp(caminho, "0")) return 0;
       if (!*caminho) { puts("Nenhum arquivo informado. Digite o caminho e pressione ENTER."); continue; }
-      if (lerArquivo(caminho, a)) {
+      if (strstr(caminho, ".json") != NULL) {
+        if (lerAFNJson(caminho, a, numero) && validoAFN(a)) {
+          printf("M%d carregado com sucesso do JSON: %d estados e %d simbolos.\n", numero, a->n, a->m);
+          return 1;
+        }
+      } else if (lerArquivo(caminho, a)) {
         printf("M%d carregado com sucesso: %d estados e %d simbolos.\n", numero, a->n, a->m);
         return 1;
       }
@@ -242,7 +248,46 @@ void menuInterseccaoAutomatos(void) {
   descartarLinha();
   puts("\n=== INTERSECCAO DE DOIS AFs (AFN/AFD, SEM LAMBDA) ===");
   puts("Vamos encontrar as palavras que os dois automatos aceitam em comum.");
-  if (!lerEntrada(1, &a1) || !lerEntrada(2, &a2)) {
+
+  puts("\nComo deseja informar os automatos para a interseccao?");
+  puts("1 - Ler ambos de um unico arquivo .json (ex: exemplo_leitura.json)");
+  puts("2 - Informar AF 1 e AF 2 separadamente (teclado / .txt / .json)");
+  printf("Opcao [padrao: 1]: ");
+
+  char linha_opcao[256];
+  int modo = 1;
+  if (lerLinha(stdin, linha_opcao, sizeof linha_opcao) && linha_opcao[0]) {
+    inteiro(linha_opcao, 2, &modo);
+  }
+  if (modo != 1 && modo != 2) modo = 1;
+
+  int carregado = 0;
+  if (modo == 1) {
+    char caminho_json[1024];
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    fflush(stdout);
+    if (lerLinha(stdin, caminho_json, sizeof caminho_json) && caminho_json[0]) {
+      char *p = caminho_json;
+      while (isspace((unsigned char)*p)) ++p;
+      size_t n = strlen(p);
+      while (n && isspace((unsigned char)p[n - 1])) p[--n] = 0;
+      if (n >= 2 && ((p[0] == '"' && p[n - 1] == '"') || (p[0] == '\'' && p[n - 1] == '\''))) {
+        p[n - 1] = 0;
+        ++p;
+      }
+      if (lerDoisAFNsJson(p, &a1, &a2) && validoAFN(&a1) && validoAFN(&a2)) {
+        printf("M1 carregado (%d estados, %d simbolos) e M2 carregado (%d estados, %d simbolos).\n",
+               a1.n, a1.m, a2.n, a2.m);
+        carregado = 1;
+      } else {
+        puts("Falha ao carregar os 2 automatos do JSON informado.");
+      }
+    }
+  } else {
+    carregado = lerEntrada(1, &a1) && lerEntrada(2, &a2);
+  }
+
+  if (!carregado) {
     puts("Operacao cancelada ou entrada invalida. Retornando ao menu.");
     return;
   }

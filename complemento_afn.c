@@ -1,6 +1,7 @@
 #include "complemento_afn.h"
 #include "commons.h"
 #include "minimizar_afd.h"
+#include "json_reader.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -251,6 +252,7 @@ void menuComplementoAFN(void) {
   printf("Como deseja informar o AFN?\n");
   printf("1 - Digitar pelo teclado\n");
   printf("2 - Ler de arquivo .txt\n");
+  printf("3 - Ler de arquivo .json\n");
   printf("Opcao: ");
   if (scanf("%d", &opcao) != 1)
     opcao = 1;
@@ -258,7 +260,15 @@ void menuComplementoAFN(void) {
   if (opcao == 2) {
     printf("Nome do arquivo (ex: exemplo_afn_ab.txt): ");
     scanf("%255s", nome);
-    ok = lerAFNArquivo(nome, &afn_orig);
+    if (strstr(nome, ".json") != NULL) {
+      ok = lerAFNJson(nome, &afn_orig, 0);
+    } else {
+      ok = lerAFNArquivo(nome, &afn_orig);
+    }
+  } else if (opcao == 3) {
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    scanf("%255s", nome);
+    ok = lerAFNJson(nome, &afn_orig, 0);
   } else {
     printf("\n");
     ok = lerAFN(&afn_orig);

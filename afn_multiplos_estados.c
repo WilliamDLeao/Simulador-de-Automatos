@@ -1,5 +1,6 @@
 #include "afn_multiplos_estados.h"
 #include "commons.h"
+#include "json_reader.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -178,6 +179,9 @@ int lerAFNMultiplo(AFNMultiplo *a) {
 }
 
 int lerAFNMultiploArquivo(const char *nome, AFNMultiplo *a) {
+  if (nome && strstr(nome, ".json") != NULL) {
+    return lerAFNMultiploJson(nome, a, 0);
+  }
   FILE *f = fopen(nome, "r");
   if (!f) {
     printf("Nao foi possivel abrir o arquivo '%s'.\n", nome);
@@ -513,6 +517,7 @@ void menuAFNMultiplosParaLambda(void) {
   printf("Como deseja informar o AFN com multiplos estados?\n");
   printf("1 - Digitar pelo teclado\n");
   printf("2 - Ler de arquivo .txt\n");
+  printf("3 - Ler de arquivo .json\n");
   printf("Opcao: ");
   if (scanf("%d", &opcao) != 1)
     opcao = 1;
@@ -520,7 +525,15 @@ void menuAFNMultiplosParaLambda(void) {
   if (opcao == 2) {
     printf("Nome do arquivo (ex: exemplo_afn_multiplos.txt): ");
     scanf("%255s", nome);
-    ok = lerAFNMultiploArquivo(nome, &entrada);
+    if (strstr(nome, ".json") != NULL) {
+      ok = lerAFNMultiploJson(nome, &entrada, 0);
+    } else {
+      ok = lerAFNMultiploArquivo(nome, &entrada);
+    }
+  } else if (opcao == 3) {
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    scanf("%255s", nome);
+    ok = lerAFNMultiploJson(nome, &entrada, 0);
   } else {
     printf("\n");
     ok = lerAFNMultiplo(&entrada);

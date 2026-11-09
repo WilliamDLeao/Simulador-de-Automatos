@@ -1,5 +1,7 @@
 #include "afd.h"
+#include "json_reader.h"
 #include <stdio.h>
+#include <string.h>
 
 
 /* guarda a transicao origem --sim--> destino. Retorna 0 se invalida. */
@@ -123,6 +125,9 @@ static int lerAFDde(FILE *f, AFD *a, int msg) {
 int lerAFD(AFD *a) { return lerAFDde(stdin, a, 1); }
 
 int lerAFDArquivo(const char *nome, AFD *a) {
+  if (nome && strstr(nome, ".json") != NULL) {
+    return lerAFDJson(nome, a, 0);
+  }
   FILE *f = fopen(nome, "r");
   if (!f) {
     printf("Nao foi possivel abrir o arquivo '%s'.\n", nome);

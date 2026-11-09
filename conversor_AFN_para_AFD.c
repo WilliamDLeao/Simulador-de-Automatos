@@ -1,5 +1,6 @@
 #include "conversor_AFN_para_AFD.h"
 #include "commons.h"
+#include "json_reader.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -120,6 +121,9 @@ static int lerLinhaUtil(FILE *f, char *buf, int max) {
 }
 
 int lerAFNArquivo(const char *nome, AFN *a) {
+  if (nome && strstr(nome, ".json") != NULL) {
+    return lerAFNJson(nome, a, 0);
+  }
   FILE *f = fopen(nome, "r");
   if (!f) {
     printf("Nao foi possivel abrir o arquivo '%s'.\n", nome);
@@ -320,14 +324,23 @@ void menuConversorAFNparaAFD(void) {
   printf("Como deseja informar o AFN?\n");
   printf("1 - Digitar\n");
   printf("2 - Ler de arquivo .txt\n");
+  printf("3 - Ler de arquivo .json\n");
   printf("Opcao: ");
   if (scanf("%d", &opcao) != 1)
     opcao = 1;
 
   if (opcao == 2) {
-    printf("Nome do arquivo: ");
+    printf("Nome do arquivo (ex: exemplo_afn.txt): ");
     scanf("%255s", nome);
-    ok = lerAFNArquivo(nome, &afn);
+    if (strstr(nome, ".json") != NULL) {
+      ok = lerAFNJson(nome, &afn, 0);
+    } else {
+      ok = lerAFNArquivo(nome, &afn);
+    }
+  } else if (opcao == 3) {
+    printf("Nome do arquivo .json (ex: exemplo_leitura.json): ");
+    scanf("%255s", nome);
+    ok = lerAFNJson(nome, &afn, 0);
   } else {
     printf("\n");
     ok = lerAFN(&afn);

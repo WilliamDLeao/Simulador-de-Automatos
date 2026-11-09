@@ -1,0 +1,27 @@
+{
+  "autômato1": {
+    "alfabeto": ["a", "b"],
+    "estados": ["Q0", "Q1", "Q2"],
+    "estados finais": ["Q2"],
+    "estados iniciais": ["Q0"],
+    "transições": [
+      ["Q0", "Q1", "a"],
+      ["Q1", "Q2", "b"],
+      ["Q2", "Q2", "a"],
+      ["Q2", "Q2", "b"]
+    ]
+  },
+
+  "autômato2": {
+    "alfabeto": ["a", "b"],
+    "estados": ["Q0", "Q1", "Q2"],
+    "estados finais": ["Q2"],
+    "estados iniciais": ["Q0"],
+    "transições": [
+      ["Q0", "Q1", "b"],
+      ["Q1", "Q2", "a"],
+      ["Q2", "Q2", "a"],
+      ["Q2", "Q2", "b"]
+    ]
+  }
+}
