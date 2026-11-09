@@ -3,15 +3,20 @@
     {
       "name": "windows-gcc-x86",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/src",
+        "C:/MinGW/include",
+        "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
+        "C:/MinGW/lib/gcc/mingw32/6.3.0/include-fixed"
+      ],
+      "defines": [
+        "_CRT_SECURE_NO_WARNINGS"
       ],
       "compilerPath": "C:/MinGW/bin/gcc.exe",
-      "cStandard": "${default}",
-      "cppStandard": "${default}",
+      "cStandard": "c11",
+      "cppStandard": "c++11",
       "intelliSenseMode": "windows-gcc-x86",
-      "compilerArgs": [
-        ""
-      ]
+      "compilerArgs": []
     }
   ],
   "version": 4

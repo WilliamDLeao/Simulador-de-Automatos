@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "commons.h"
 
-void limparTela() {
+void limparTela(void) {
     #ifdef _WIN32
         system("cls");   // Windows
     #else
@@ -16,7 +16,7 @@ void imprimirCabecalho(const char *titulo) {
     printf("============================================================\n");
 }
 
-void pausarTela() {
+void pausarTela(void) {
     printf("\nPressione [ENTER] para continuar...");
     char temp[64];
     if (fgets(temp, sizeof(temp), stdin) == NULL) {

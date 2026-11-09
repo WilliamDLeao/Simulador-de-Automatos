@@ -17,16 +17,19 @@ static int str_case_eq(const char *s1, const char *s2) {
   return *s1 == *s2;
 }
 
-/* Remove espaços e converte caracteres acentuados comuns em UTF-8 para ASCII minúsculo */
+/* Remove espaços e converte caracteres acentuados comuns em UTF-8 para ASCII
+ * minúsculo */
 static void normalizarChave(const char *src, char *dst, size_t max_dst) {
   size_t i = 0, j = 0;
   while (src[i] && j + 1 < max_dst) {
     unsigned char c = (unsigned char)src[i];
-    if (c == ' ' || c == '_' || c == '-' || c == '\t' || c == '\r' || c == '\n') {
+    if (c == ' ' || c == '_' || c == '-' || c == '\t' || c == '\r' ||
+        c == '\n') {
       i++;
       continue;
     }
-    /* Tratamento de sequências UTF-8 de 2 bytes com acentos comuns em português */
+    /* Tratamento de sequências UTF-8 de 2 bytes com acentos comuns em português
+     */
     if (c == 0xC3 && src[i + 1] != '\0') {
       unsigned char c2 = (unsigned char)src[i + 1];
       switch (c2) {
@@ -115,10 +118,11 @@ static TokenType proximoToken(JsonParser *p) {
         p->pos++;
       continue;
     }
-    /* Ignora comentários /* ... */
+    /* Ignora comentários em bloco */
     if (c == '/' && p->pos + 1 < p->len && p->src[p->pos + 1] == '*') {
       p->pos += 2;
-      while (p->pos + 1 < p->len && !(p->src[p->pos] == '*' && p->src[p->pos + 1] == '/'))
+      while (p->pos + 1 < p->len &&
+             !(p->src[p->pos] == '*' && p->src[p->pos + 1] == '/'))
         p->pos++;
       if (p->pos + 1 < p->len)
         p->pos += 2;
@@ -198,7 +202,9 @@ static TokenType proximoToken(JsonParser *p) {
   /* Número ou identificador sem aspas */
   if (isdigit((unsigned char)c) || c == '-') {
     size_t out_len = 0;
-    while (p->pos < p->len && (isdigit((unsigned char)p->src[p->pos]) || p->src[p->pos] == '.' || p->src[p->pos] == '-')) {
+    while (p->pos < p->len &&
+           (isdigit((unsigned char)p->src[p->pos]) || p->src[p->pos] == '.' ||
+            p->src[p->pos] == '-')) {
       if (out_len + 1 < sizeof(p->str_val))
         p->str_val[out_len++] = p->src[p->pos++];
       else
@@ -308,19 +314,21 @@ static int ehSimboloAlfabeto(const AutomatoJson *a, const char *s) {
 static int ehSimboloLambda(const char *s) {
   if (!s)
     return 0;
-  if (strcmp(s, "l") == 0 || strcmp(s, "L") == 0 ||
-      str_case_eq(s, "lambda") || str_case_eq(s, "epsilon") ||
-      strcmp(s, "\xce\xbb") == 0 || /* λ */
-      strcmp(s, "\xce\xb5") == 0 || /* ε */
+  if (strcmp(s, "l") == 0 || strcmp(s, "L") == 0 || str_case_eq(s, "lambda") ||
+      str_case_eq(s, "epsilon") || strcmp(s, "\xce\xbb") == 0 || /* λ */
+      strcmp(s, "\xce\xb5") == 0 ||                              /* ε */
       strcmp(s, "-") == 0 || strcmp(s, "_") == 0 || s[0] == '\0') {
     return 1;
   }
   return 0;
 }
 
-/* Processa uma transição lida do JSON: suporta [origem, destino, simbolo] e [origem, simbolo, destino] */
-static void processarTransicaoJson(AutomatoJson *a, char elems[3][64], int count) {
-  if (count < 2 || a->qtd_transicoes >= (int)(sizeof(a->transicoes) / sizeof(a->transicoes[0])))
+/* Processa uma transição lida do JSON: suporta [origem, destino, simbolo] e
+ * [origem, simbolo, destino] */
+static void processarTransicaoJson(AutomatoJson *a, char elems[3][64],
+                                   int count) {
+  if (count < 2 || a->qtd_transicoes >=
+                       (int)(sizeof(a->transicoes) / sizeof(a->transicoes[0])))
     return;
 
   int o = 0, d = 0, is_lambda = 0;
@@ -362,7 +370,8 @@ static void processarTransicaoJson(AutomatoJson *a, char elems[3][64], int count
         sim = elems[1][0];
       }
     } else {
-      /* Caso não esteja explícito no alfabeto prévio: verifica qual parece símbolo (1 caractere) */
+      /* Caso não esteja explícito no alfabeto prévio: verifica qual parece
+       * símbolo (1 caractere) */
       if (strlen(elems[2]) == 1 && strlen(elems[1]) > 1) {
         o = obterOuCadastrarEstado(a, elems[0]);
         d = obterOuCadastrarEstado(a, elems[1]);
@@ -381,7 +390,8 @@ static void processarTransicaoJson(AutomatoJson *a, char elems[3][64], int count
         is_lambda = ehSimboloLambda(elems[2]);
       }
       /* Adiciona ao alfabeto se não for lambda */
-      if (!is_lambda && sim != '\0' && !ehSimboloAlfabeto(a, (char[]){sim, '\0'})) {
+      if (!is_lambda && sim != '\0' &&
+          !ehSimboloAlfabeto(a, (char[]){sim, '\0'})) {
         if (a->m < JSON_MAX_SIMBOLOS) {
           a->alfabeto[a->m++] = sim;
         }
@@ -465,8 +475,10 @@ static void parseObjetoAutomato(JsonParser *p, AutomatoJson *a) {
       } else {
         pularValor(p);
       }
-    } else if (strcmp(chave, "estadosiniciais") == 0 || strcmp(chave, "iniciais") == 0 ||
-               strcmp(chave, "estadoinicial") == 0 || strcmp(chave, "initialstates") == 0 ||
+    } else if (strcmp(chave, "estadosiniciais") == 0 ||
+               strcmp(chave, "iniciais") == 0 ||
+               strcmp(chave, "estadoinicial") == 0 ||
+               strcmp(chave, "initialstates") == 0 ||
                strcmp(chave, "initial") == 0) {
       if (p->tipo == TOK_LBRACKET) {
         proximoToken(p);
@@ -494,8 +506,10 @@ static void parseObjetoAutomato(JsonParser *p, AutomatoJson *a) {
       } else {
         pularValor(p);
       }
-    } else if (strcmp(chave, "estadosfinais") == 0 || strcmp(chave, "finais") == 0 ||
-               strcmp(chave, "estadofinal") == 0 || strcmp(chave, "finalstates") == 0 ||
+    } else if (strcmp(chave, "estadosfinais") == 0 ||
+               strcmp(chave, "finais") == 0 ||
+               strcmp(chave, "estadofinal") == 0 ||
+               strcmp(chave, "finalstates") == 0 ||
                strcmp(chave, "final") == 0) {
       if (p->tipo == TOK_LBRACKET) {
         proximoToken(p);
@@ -523,7 +537,8 @@ static void parseObjetoAutomato(JsonParser *p, AutomatoJson *a) {
       } else {
         pularValor(p);
       }
-    } else if (strcmp(chave, "transicoes") == 0 || strcmp(chave, "transicao") == 0 ||
+    } else if (strcmp(chave, "transicoes") == 0 ||
+               strcmp(chave, "transicao") == 0 ||
                strcmp(chave, "transitions") == 0) {
       if (p->tipo == TOK_LBRACKET) {
         proximoToken(p);
@@ -680,10 +695,13 @@ int lerArquivoJson(const char *caminho, ArquivoJsonAutomatos *res) {
         res->qtd_automatos = 1;
       encontrou_chaves_raiz = 1;
     } else if (!encontrou_chaves_raiz &&
-               (strcmp(chave, "alfabeto") == 0 || strcmp(chave, "estados") == 0 ||
-                strcmp(chave, "estadosiniciais") == 0 || strcmp(chave, "estadosfinais") == 0 ||
+               (strcmp(chave, "alfabeto") == 0 ||
+                strcmp(chave, "estados") == 0 ||
+                strcmp(chave, "estadosiniciais") == 0 ||
+                strcmp(chave, "estadosfinais") == 0 ||
                 strcmp(chave, "transicoes") == 0)) {
-      /* Caso onde a raiz é o próprio autômato diretamente (sem chave 'autômato1') */
+      /* Caso onde a raiz é o próprio autômato diretamente (sem chave
+       * 'autômato1') */
       free(conteudo);
       /* Reinicia o parser a partir da raiz como o autômato a1 */
       p.src = (const char *)malloc((size_t)tam + 1);
@@ -722,7 +740,8 @@ int lerArquivoJson(const char *caminho, ArquivoJsonAutomatos *res) {
 
 int automatoJsonParaAFD(const AutomatoJson *aj, AFD *afd) {
   if (!aj || !afd || aj->n < 1 || aj->n > MAX_ESTADOS) {
-    printf("Erro: Automato possui %d estados (limite para AFD: %d).\n", aj ? aj->n : 0, MAX_ESTADOS);
+    printf("Erro: Automato possui %d estados (limite para AFD: %d).\n",
+           aj ? aj->n : 0, MAX_ESTADOS);
     return 0;
   }
 
@@ -771,7 +790,8 @@ int automatoJsonParaAFD(const AutomatoJson *aj, AFD *afd) {
     }
 
     if (afd->delta[o][s] != -1 && afd->delta[o][s] != d) {
-      printf("Aviso: Nao-determinismo detectado no AFD: q%d com '%c' tem mais de um destino (q%d e q%d).\n",
+      printf("Aviso: Nao-determinismo detectado no AFD: q%d com '%c' tem mais "
+             "de um destino (q%d e q%d).\n",
              o, sim, afd->delta[o][s], d);
     }
     afd->delta[o][s] = d;
@@ -782,7 +802,8 @@ int automatoJsonParaAFD(const AutomatoJson *aj, AFD *afd) {
 
 int automatoJsonParaAFN(const AutomatoJson *aj, AFN *afn) {
   if (!aj || !afn || aj->n < 1 || aj->n > MAX_AFN_ESTADOS) {
-    printf("Erro: Automato possui %d estados (limite para AFN: %d).\n", aj ? aj->n : 0, MAX_AFN_ESTADOS);
+    printf("Erro: Automato possui %d estados (limite para AFN: %d).\n",
+           aj ? aj->n : 0, MAX_AFN_ESTADOS);
     return 0;
   }
 
@@ -815,7 +836,9 @@ int automatoJsonParaAFN(const AutomatoJson *aj, AFN *afn) {
     char sim = aj->transicoes[t].simbolo;
 
     if (aj->transicoes[t].is_lambda) {
-      printf("Aviso: Transicao lambda ignorada no AFN sem lambda (q%d -> q%d).\n", o, d);
+      printf(
+          "Aviso: Transicao lambda ignorada no AFN sem lambda (q%d -> q%d).\n",
+          o, d);
       continue;
     }
 
@@ -837,7 +860,8 @@ int automatoJsonParaAFN(const AutomatoJson *aj, AFN *afn) {
 
 int automatoJsonParaAFNMultiplo(const AutomatoJson *aj, AFNMultiplo *afnm) {
   if (!aj || !afnm || aj->n < 1 || aj->n > MAX_AFN_ME_ESTADOS) {
-    printf("Erro: Automato possui %d estados (limite para AFN multiplos estados: %d).\n",
+    printf("Erro: Automato possui %d estados (limite para AFN multiplos "
+           "estados: %d).\n",
            aj ? aj->n : 0, MAX_AFN_ME_ESTADOS);
     return 0;
   }
@@ -911,7 +935,9 @@ int automatoJsonParaAFNMultiplo(const AutomatoJson *aj, AFNMultiplo *afnm) {
   return 1;
 }
 
-static const AutomatoJson *selecionarAutomatoJson(const ArquivoJsonAutomatos *arq, const char *caminho, int indice) {
+static const AutomatoJson *
+selecionarAutomatoJson(const ArquivoJsonAutomatos *arq, const char *caminho,
+                       int indice) {
   if (arq->qtd_automatos == 1)
     return &arq->a1;
 
@@ -921,14 +947,17 @@ static const AutomatoJson *selecionarAutomatoJson(const ArquivoJsonAutomatos *ar
     return &arq->a2;
 
   printf("\nO arquivo '%s' contem 2 automatos:\n", caminho);
-  printf("  1 - %s (%d estados, %d simbolos)\n", arq->a1.nome[0] ? arq->a1.nome : "automato1", arq->a1.n, arq->a1.m);
-  printf("  2 - %s (%d estados, %d simbolos)\n", arq->a2.nome[0] ? arq->a2.nome : "automato2", arq->a2.n, arq->a2.m);
+  printf("  1 - %s (%d estados, %d simbolos)\n",
+         arq->a1.nome[0] ? arq->a1.nome : "automato1", arq->a1.n, arq->a1.m);
+  printf("  2 - %s (%d estados, %d simbolos)\n",
+         arq->a2.nome[0] ? arq->a2.nome : "automato2", arq->a2.n, arq->a2.m);
   printf("Qual automato deseja utilizar? (1 ou 2) [padrao: 1]: ");
 
   char buf[64];
   int op = 1;
   if (fgets(buf, sizeof(buf), stdin) != NULL) {
-    /* Se a linha for apenas '\n' ou '\r' (resquício de scanf anterior), lê novamente */
+    /* Se a linha for apenas '\n' ou '\r' (resquício de scanf anterior), lê
+     * novamente */
     if (buf[0] == '\n' || buf[0] == '\r' || buf[0] == '\0') {
       if (fgets(buf, sizeof(buf), stdin) == NULL) {
         return &arq->a1;
@@ -944,7 +973,8 @@ int lerAFDJson(const char *caminho, AFD *a, int indice_automato) {
   ArquivoJsonAutomatos arq;
   if (!lerArquivoJson(caminho, &arq))
     return 0;
-  const AutomatoJson *escolhido = selecionarAutomatoJson(&arq, caminho, indice_automato);
+  const AutomatoJson *escolhido =
+      selecionarAutomatoJson(&arq, caminho, indice_automato);
   return automatoJsonParaAFD(escolhido, a);
 }
 
@@ -952,15 +982,18 @@ int lerAFNJson(const char *caminho, AFN *a, int indice_automato) {
   ArquivoJsonAutomatos arq;
   if (!lerArquivoJson(caminho, &arq))
     return 0;
-  const AutomatoJson *escolhido = selecionarAutomatoJson(&arq, caminho, indice_automato);
+  const AutomatoJson *escolhido =
+      selecionarAutomatoJson(&arq, caminho, indice_automato);
   return automatoJsonParaAFN(escolhido, a);
 }
 
-int lerAFNMultiploJson(const char *caminho, AFNMultiplo *a, int indice_automato) {
+int lerAFNMultiploJson(const char *caminho, AFNMultiplo *a,
+                       int indice_automato) {
   ArquivoJsonAutomatos arq;
   if (!lerArquivoJson(caminho, &arq))
     return 0;
-  const AutomatoJson *escolhido = selecionarAutomatoJson(&arq, caminho, indice_automato);
+  const AutomatoJson *escolhido =
+      selecionarAutomatoJson(&arq, caminho, indice_automato);
   return automatoJsonParaAFNMultiplo(escolhido, a);
 }
 
@@ -969,7 +1002,8 @@ int lerDoisAFDsJson(const char *caminho, AFD *a1, AFD *a2) {
   if (!lerArquivoJson(caminho, &arq))
     return 0;
   if (arq.qtd_automatos < 2) {
-    printf("O arquivo '%s' contem apenas 1 automato. Esta funcionalidade requer 2 automatos (autômato1 e autômato2).\n",
+    printf("O arquivo '%s' contem apenas 1 automato. Esta funcionalidade "
+           "requer 2 automatos (autômato1 e autômato2).\n",
            caminho);
     return 0;
   }
@@ -985,7 +1019,8 @@ int lerDoisAFNsJson(const char *caminho, AFN *a1, AFN *a2) {
   if (!lerArquivoJson(caminho, &arq))
     return 0;
   if (arq.qtd_automatos < 2) {
-    printf("O arquivo '%s' contem apenas 1 automato. Esta funcionalidade requer 2 automatos (autômato1 e autômato2).\n",
+    printf("O arquivo '%s' contem apenas 1 automato. Esta funcionalidade "
+           "requer 2 automatos (autômato1 e autômato2).\n",
            caminho);
     return 0;
   }
@@ -995,4 +1030,3 @@ int lerDoisAFNsJson(const char *caminho, AFN *a1, AFN *a2) {
     return 0;
   return 1;
 }
-
