@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "${workspaceFolder}",
-      "program": "${workspaceFolder}/exe.exe",
+      "cwd": "c:/Users/Rafael/Documents/Simulador-de-Automatos/src",
+      "program": "c:/Users/Rafael/Documents/Simulador-de-Automatos/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

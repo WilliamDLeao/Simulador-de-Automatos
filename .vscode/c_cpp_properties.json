@@ -4,10 +4,8 @@
       "name": "windows-gcc-x86",
       "includePath": [
         "${workspaceFolder}/**",
-        "${workspaceFolder}/src",
-        "C:/MinGW/include",
-        "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
-        "C:/MinGW/lib/gcc/mingw32/6.3.0/include-fixed"
+        "src",
+        "C:/MinGW/include"
       ],
       "defines": [
         "_CRT_SECURE_NO_WARNINGS"
