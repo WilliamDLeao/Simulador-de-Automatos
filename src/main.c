@@ -6,6 +6,7 @@
 #include "exportar_automato.h"
 #include "interseccao_automatos.h"
 #include "minimizar_afd.h"
+#include "simular_automato.h"
 #include "subtracao_automatos.h"
 #include "uniao_automatos.h"
 #include <stdio.h>
@@ -22,11 +23,12 @@ int main(void) {
     printf("\n2-AFN lambda para AFN");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
-    printf("\n5-Exportar automato (.txt / .json)");
+    printf("\n5-Simular palavras com automato JSON");
     printf("\n6-Uniao de automatos");
     printf("\n7-Interseccao de dois AFs (AFN/AFD)");
     printf("\n8- Subtracao de automatos");
     printf("\n9-Complemento de AFN");
+    printf("\n10-Exportar automato (.txt / .json)");
     printf("\n0-Sair");
     printf("\nDigite o número: ");
 
@@ -58,7 +60,13 @@ int main(void) {
     case 4:
       menuMinimizarAFD();
       break;
-    case 5:
+    case 5: {
+      int ch;
+      while ((ch = getchar()) != '\n' && ch != EOF) {
+      }
+      menuSimularAutomato();
+      break;
+    }
     case 10:
       menuExportarAutomato();
       break;
