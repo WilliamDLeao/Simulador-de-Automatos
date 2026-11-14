@@ -69,6 +69,7 @@ Simulador-de-Automatos/
 │   ├── commons.c / .h      # Funções de terminal (limpar tela, pausas)
 │   ├── complemento_afn.c / .h       # Complemento formal de AFN
 │   ├── conversor_AFN_para_AFD.c / .h# Determinização (Subset Construction)
+│   ├── exportar_automato.c / .h     # Exportador de autômatos em .txt e .json
 │   ├── interseccao_automatos.c / .h # Interseção via produto cartesiano
 │   ├── json_reader.c / .h  # Leitor e parser de autômatos em JSON
 │   ├── minimizar_afd.c / .h# Minimização de AFD (Moore)
@@ -144,7 +145,21 @@ Reduz o AFD para o menor número de estados possíveis usando partição de equi
 
 ---
 
-### 6. Opção 6 — União de Autômatos (`src/uniao_automatos.c` / `.h`)
+### 6. Opção 5 — Exportar Autômato (`src/exportar_automato.c` / `.h`)
+Permite carregar qualquer autômato (via arquivo `.txt`, `.json` ou entrada manual pelo teclado) e exportá-lo como `.txt`, como `.json` ou em ambos os formatos simultaneamente.
+
+- `exportarAFDParaTxt(const char *caminho, const AFD *a)`: Salva um AFD no formato padrão `.txt`.
+- `exportarAFDParaJson(const char *caminho, const AFD *a, const char *nome_obj)`: Exporta a estrutura formal do AFD no formato padronizado `.json`.
+- `exportarAFNParaTxt(const char *caminho, const AFN *a)`: Salva um AFN no formato `.txt`.
+- `exportarAFNParaJson(const char *caminho, const AFN *a, const char *nome_obj)`: Exporta a estrutura formal do AFN no formato `.json`.
+- `exportarAFNMultiploParaTxt(...)` / `exportarAFNMultiploParaJson(...)`: Exporta autômatos com múltiplos estados iniciais/finais e transições $\lambda$.
+- `exportarDoisAFDsParaJson(const char *caminho, const AFD *a1, const AFD *a2)`: Exporta simultaneamente dois autômatos para um único arquivo `.json` (`autômato1` e `autômato2`).
+- `oferecerExportacaoAFD(...)` / `oferecerExportacaoAFN(...)`: Utilitário para prompt interativo de salvamento em `.txt`, `.json` ou ambos.
+- `menuExportarAutomato(void)`: Submenu interativo completo do menu principal para carregar, inspecionar e exportar autômatos nos formatos `.txt` e `.json`.
+
+---
+
+### 7. Opção 6 — União de Autômatos (`src/uniao_automatos.c` / `.h`)
 Calcula a união das linguagens de dois AFDs: $L = L(M_1) \cup L(M_2)$.
 
 - `unirAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Constrói o AFD produto em paralelo via BFS com o alfabeto unificado ($\Sigma_1 \cup \Sigma_2$). Um par $(p, q)$ é final se $p \in F_1 \lor q \in F_2$.

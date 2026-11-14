@@ -1,5 +1,6 @@
 #include "interseccao_automatos.h"
 #include "complemento_afn.h"
+#include "exportar_automato.h"
 #include "minimizar_afd.h"
 #include "json_reader.h"
 #include <ctype.h>
@@ -368,7 +369,12 @@ void menuInterseccaoAutomatos(void) {
         puts("Arquivo ja existe. Escolha outro nome para preservar seu conteudo.");
         continue;
       }
-      int ok = op == 3 ? salvarAFNEmArquivo(linha, &equivalente) : salvarAFDEmArquivo(linha, salvar);
+      int ok;
+      if (strstr(linha, ".json") != NULL) {
+        ok = op == 3 ? exportarAFNParaJson(linha, &equivalente, "autômato1") : exportarAFDParaJson(linha, salvar, "autômato1");
+      } else {
+        ok = op == 3 ? salvarAFNEmArquivo(linha, &equivalente) : salvarAFDEmArquivo(linha, salvar);
+      }
       if (ok) printf("Resultado salvo em '%s'.\n", linha);
     }
   }

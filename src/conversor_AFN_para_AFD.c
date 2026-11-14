@@ -1,5 +1,6 @@
 #include "conversor_AFN_para_AFD.h"
 #include "commons.h"
+#include "exportar_automato.h"
 #include "json_reader.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -367,6 +368,8 @@ void menuConversorAFNparaAFD(void) {
   imprimirAFN(&afn);
   printf("\n--- AFD convertido ---\n");
   imprimirAFD(&dfa);
+
+  oferecerExportacaoAFD(&dfa, "afd_convertido");
 
   int ch;
   while ((ch = getchar()) != '\n' && ch != EOF)

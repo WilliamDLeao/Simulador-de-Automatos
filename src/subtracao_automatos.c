@@ -1,5 +1,6 @@
 #include "subtracao_automatos.h"
 #include "commons.h"
+#include "exportar_automato.h"
 #include "minimizar_afd.h"
 #include "json_reader.h"
 #include <stdio.h>
@@ -185,6 +186,9 @@ void menuSubtracaoAutomatos(void) {
   if (minimizarAFD(&subtracao, &min)) {
     printf("\n--- AFD Subtracao Minimizado ---\n");
     imprimirAFD(&min);
+    oferecerExportacaoAFD(&min, "afd_subtracao_minimizado");
+  } else {
+    oferecerExportacaoAFD(&subtracao, "afd_subtracao");
   }
 
   int ch;

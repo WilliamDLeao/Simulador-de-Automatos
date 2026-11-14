@@ -1,5 +1,6 @@
 #include "minimizar_afd.h"
 #include "commons.h"
+#include "exportar_automato.h"
 #include "json_reader.h"
 #include <stdio.h>
 #include <string.h>
@@ -162,6 +163,8 @@ void menuMinimizarAFD(void) {
   imprimirAFD(&original);
   printf("\n--- AFD minimizado ---\n");
   imprimirAFD(&minimo);
+
+  oferecerExportacaoAFD(&minimo, "afd_minimizado");
 
   /* limpa o ENTER que sobrou do scanf para o pausarTela funcionar */
   int ch;

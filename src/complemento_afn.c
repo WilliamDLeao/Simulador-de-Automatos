@@ -1,5 +1,6 @@
 #include "complemento_afn.h"
 #include "commons.h"
+#include "exportar_automato.h"
 #include "minimizar_afd.h"
 #include "json_reader.h"
 #include <ctype.h>
@@ -337,6 +338,8 @@ void menuComplementoAFN(void) {
     printf("1 - Testar palavras no AFN Original vs Complementar\n");
     printf("2 - Salvar AFD Complementar em arquivo .txt\n");
     printf("3 - Salvar AFN Complementar em arquivo .txt\n");
+    printf("4 - Salvar AFD Complementar em arquivo .json\n");
+    printf("5 - Salvar AFN Complementar em arquivo .json\n");
     printf("0 - Voltar ao menu principal\n");
     printf("Escolha: ");
     if (scanf("%d", &sub_op) != 1) {
@@ -390,6 +393,20 @@ void menuComplementoAFN(void) {
       printf("Nome do arquivo para salvar o AFN (ex: afn_complementar.txt): ");
       scanf("%255s", arquivo_salvar);
       if (salvarAFNEmArquivo(arquivo_salvar, &afn_comp)) {
+        printf("AFN complementar salvo em '%s' com sucesso!\n", arquivo_salvar);
+      }
+    } else if (sub_op == 4) {
+      char arquivo_salvar[256];
+      printf("Nome do arquivo para salvar o AFD em JSON (ex: afd_complementar.json): ");
+      scanf("%255s", arquivo_salvar);
+      if (exportarAFDParaJson(arquivo_salvar, &dfa_comp, "autômato1")) {
+        printf("AFD complementar salvo em '%s' com sucesso!\n", arquivo_salvar);
+      }
+    } else if (sub_op == 5) {
+      char arquivo_salvar[256];
+      printf("Nome do arquivo para salvar o AFN em JSON (ex: afn_complementar.json): ");
+      scanf("%255s", arquivo_salvar);
+      if (exportarAFNParaJson(arquivo_salvar, &afn_comp, "autômato1")) {
         printf("AFN complementar salvo em '%s' com sucesso!\n", arquivo_salvar);
       }
     }

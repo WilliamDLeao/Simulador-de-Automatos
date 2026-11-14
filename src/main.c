@@ -3,6 +3,7 @@
 #include "commons.h"
 #include "complemento_afn.h"
 #include "conversor_AFN_para_AFD.h"
+#include "exportar_automato.h"
 #include "interseccao_automatos.h"
 #include "minimizar_afd.h"
 #include "subtracao_automatos.h"
@@ -21,6 +22,7 @@ int main(void) {
     printf("\n2-AFN lambda para AFN");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
+    printf("\n5-Exportar automato (.txt / .json)");
     printf("\n6-Uniao de automatos");
     printf("\n7-Interseccao de dois AFs (AFN/AFD)");
     printf("\n8- Subtracao de automatos");
@@ -55,6 +57,10 @@ int main(void) {
       break;
     case 4:
       menuMinimizarAFD();
+      break;
+    case 5:
+    case 10:
+      menuExportarAutomato();
       break;
     case 6:
       menuUniaoAutomatos();

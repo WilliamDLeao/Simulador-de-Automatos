@@ -1,5 +1,6 @@
 #include "uniao_automatos.h"
 #include "commons.h"
+#include "exportar_automato.h"
 #include "minimizar_afd.h"
 #include "json_reader.h"
 #include <stdio.h>
@@ -181,6 +182,9 @@ void menuUniaoAutomatos(void) {
   if (minimizarAFD(&uniao, &min)) {
     printf("\n--- AFD Uniao Minimizado ---\n");
     imprimirAFD(&min);
+    oferecerExportacaoAFD(&min, "afd_uniao_minimizado");
+  } else {
+    oferecerExportacaoAFD(&uniao, "afd_uniao");
   }
 
   int ch;
