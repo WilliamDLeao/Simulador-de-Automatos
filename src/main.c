@@ -23,7 +23,7 @@ int main(void) {
     printf("\n2-AFN lambda para AFN");
     printf("\n3-Converter AFN para AFD");
     printf("\n4-Minimizar AFD");
-    printf("\n5-Simular palavras com automato JSON");
+    printf("\n5-Simular palavras (JSON + TXT/terminal)");
     printf("\n6-Uniao de automatos");
     printf("\n7-Interseccao de dois AFs (AFN/AFD)");
     printf("\n8- Subtracao de automatos");
