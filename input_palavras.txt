@@ -1,2 +1,7 @@
+# Palavras a serem testadas (uma por linha ou separadas por espaco).
+# Linhas iniciadas por '#' ou '//' sao ignoradas.
+# Use _ para representar a palavra vazia.
 aaabb
 abb
+aab
+_

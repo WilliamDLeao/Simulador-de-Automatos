@@ -55,6 +55,15 @@ O formato padrão aceito pelos leitores do simulador segue a estrutura:
 - **Estados:** Identificados numericamente de `0` a `n-1`.
 - **Comentários:** Linhas iniciadas com `#` ou `//` e linhas vazias são ignoradas na maioria dos leitores.
 
+### Arquivos da Opção 5 — Simulação de Palavras
+
+A simulação separa os dados em dois arquivos:
+
+- **`input_automatos.json`**: contém apenas os autômatos (um ou dois, em `autômato1` / `autômato2`).
+- **`input_palavras.txt`**: contém as palavras que serão testadas, uma por linha ou separadas por espaço. Linhas iniciadas com `#` ou `//` são ignoradas e `_` representa a palavra vazia.
+
+No terminal, as palavras também podem ser digitadas uma por linha (ou separadas por espaço). A entrada é encerrada pela palavra-chave explícita `fim` (ou `sair`); só então os testes são executados. Para testar a palavra literal `fim` ou `_`, use o prefixo `=`, por exemplo `=fim` ou `=_`.
+
 ---
 
 ## 📁 Estrutura do Repositório
@@ -73,6 +82,7 @@ Simulador-de-Automatos/
 │   ├── interseccao_automatos.c / .h # Interseção via produto cartesiano
 │   ├── json_reader.c / .h  # Leitor e parser de autômatos em JSON
 │   ├── minimizar_afd.c / .h# Minimização de AFD (Moore)
+│   ├── simular_automato.c / .h      # Simulação de palavras (JSON + TXT/terminal)
 │   ├── subtracao_automatos.c / .h   # Subtração via produto cartesiano
 │   └── uniao_automatos.c / .h       # União de autômatos
 ├── Makefile                # Script de compilação Make
@@ -145,7 +155,17 @@ Reduz o AFD para o menor número de estados possíveis usando partição de equi
 
 ---
 
-### 6. Opção 5 — Exportar Autômato (`src/exportar_automato.c` / `.h`)
+### 6. Opção 5 — Simulação de Palavras (`src/simular_automato.c` / `.h`)
+Carrega os autômatos de `input_automatos.json` e testa palavras fornecidas pelo usuário.
+
+- `menuSimularAutomato(void)`: Submenu que carrega os autômatos do JSON, permite escolher a fonte das palavras (arquivo `input_palavras.txt`, terminal ou ambos) e exibe o resultado de cada palavra em todos os autômatos.
+- `simularPalavraAutomatoJson(...)`: Executa a palavra diretamente sobre o autômato do JSON (interno ao módulo), com suporte a AFN, múltiplos estados iniciais e transições $\lambda$.
+- O terminal aceita várias palavras, uma por linha ou separadas por espaço, e a entrada só é encerrada pela palavra-chave explícita `fim` (ou `sair`), quando então os testes começam.
+- `_` representa a palavra vazia e `=palavra` permite testar `fim`/`_` literalmente.
+
+---
+
+### 7. Opção 10 — Exportar Autômato (`src/exportar_automato.c` / `.h`)
 Permite carregar qualquer autômato (via arquivo `.txt`, `.json` ou entrada manual pelo teclado) e exportá-lo como `.txt`, como `.json` ou em ambos os formatos simultaneamente.
 
 - `exportarAFDParaTxt(const char *caminho, const AFD *a)`: Salva um AFD no formato padrão `.txt`.
@@ -159,7 +179,7 @@ Permite carregar qualquer autômato (via arquivo `.txt`, `.json` ou entrada manu
 
 ---
 
-### 7. Opção 6 — União de Autômatos (`src/uniao_automatos.c` / `.h`)
+### 8. Opção 6 — União de Autômatos (`src/uniao_automatos.c` / `.h`)
 Calcula a união das linguagens de dois AFDs: $L = L(M_1) \cup L(M_2)$.
 
 - `unirAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Constrói o AFD produto em paralelo via BFS com o alfabeto unificado ($\Sigma_1 \cup \Sigma_2$). Um par $(p, q)$ é final se $p \in F_1 \lor q \in F_2$.
@@ -167,7 +187,7 @@ Calcula a união das linguagens de dois AFDs: $L = L(M_1) \cup L(M_2)$.
 
 ---
 
-### 7. Opção 7 — Interseção de Autômatos (`src/interseccao_automatos.c` / `.h`)
+### 9. Opção 7 — Interseção de Autômatos (`src/interseccao_automatos.c` / `.h`)
 Calcula a interseção de linguagens: $L = L(M_1) \cap L(M_2)$ para pares de AFDs ou AFNs.
 
 - `intersectarAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Executa o produto cartesiano entre dois AFDs; um par $(p, q)$ é final se $p \in F_1 \land q \in F_2$.
@@ -176,7 +196,7 @@ Calcula a interseção de linguagens: $L = L(M_1) \cap L(M_2)$ para pares de AFD
 
 ---
 
-### 8. Opção 8 — Subtração de Autômatos (`src/subtracao_automatos.c` / `.h`)
+### 10. Opção 8 — Subtração de Autômatos (`src/subtracao_automatos.c` / `.h`)
 Calcula a diferença entre duas linguagens regulares: $L = L(M_1) \setminus L(M_2)$.
 
 - `subtrairAFDs(const AFD *a1, const AFD *a2, AFD *saida)`: Gera o produto cartesiano em paralelo onde um par $(p, q)$ é final se $p \in F_1 \land q \notin F_2$.
@@ -184,7 +204,7 @@ Calcula a diferença entre duas linguagens regulares: $L = L(M_1) \setminus L(M_
 
 ---
 
-### 9. Opção 9 — Complemento de AFN (`src/complemento_afn.c` / `.h`)
+### 11. Opção 9 — Complemento de AFN (`src/complemento_afn.c` / `.h`)
 Calcula o complemento da linguagem de um AFN: $L(\overline{M}) = \Sigma^* \setminus L(M)$.
 
 - `determinizarAFNCompleto(const AFN *afn, AFD *dfa_completo)`: Converte o AFN em AFD e garante que a função de transição seja total, inserindo um estado morto/poço caso haja transições indefinidas.
@@ -198,7 +218,7 @@ Calcula o complemento da linguagem de um AFN: $L(\overline{M}) = \Sigma^* \setmi
 
 ---
 
-### 10. Módulos Utilitários
+### 12. Módulos Utilitários
 
 #### Funções Comuns (`src/commons.c` / `.h`)
 - `limparTela()`: Limpa o terminal de forma compatível com Windows (`cls`) e Linux/POSIX (`clear`).
