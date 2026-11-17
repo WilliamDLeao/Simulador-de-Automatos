@@ -159,9 +159,11 @@ static int simularPalavraAutomatoJson(const AutomatoJson *a, const char *palavra
     fecho_lambda(a, proximo, atual);
   }
 
-  for (int i = 0; i < a->n; i++)
-    if (atual[i] && a->final[i])
+  for (int i = 0; i < a->qtd_finais; i++) {
+    int q = a->finais[i];
+    if (q >= 0 && q < a->n && atual[q])
       return 1;
+  }
   return 0;
 }
 
